@@ -1,7 +1,7 @@
 ﻿/*
 	Collection of tools for WinJS
 	author: @CKGrafico
-	version: 0.2
+	version: 0.3
 */
 
 
@@ -46,7 +46,7 @@
 					// extend options
 					_.extend(dafaults, options);
 				}
-				
+
 				this.alertThree({
 					text: dafaults.text,
 					options: [
@@ -172,9 +172,9 @@
 			// Roaming data
 			roaming: function (key, data) {
 				if(data) {
-					 roamingSettings.values[key] = data;
+					roamingSettings.values[key] = data;
 				}else{
-					 return roamingSettings.values[key];
+					return roamingSettings.values[key];
 				}
 			},
 
@@ -192,8 +192,8 @@
 
 				var app;
 				if(dafaults.debugMode) {
-					 app = currentAppSimulator;
-					 console.log('You\'re in debug mode for purchase with id: ' + dafaults.id);
+					app = currentAppSimulator;
+					console.log('You\'re in debug mode for purchase with id: ' + dafaults.id);
 				}else{
 					app = currentApp;
 				}
@@ -201,11 +201,27 @@
 				app.requestProductPurchaseAsync(dafaults.id).done(
 					function (results) {
 						if (licenseInformation.productLicenses.lookup(dafaults.id).isActive){
-							 dafaults.onDone(results);
+							dafaults.onDone(results);
 						} else {
-							 dafaults.onFail(results);
+							dafaults.onFail(results);
 						}
 					});
+			},
+
+			// Add action to charm
+			charm: function(id, text, callback){
+				WinJS.Application.onsettings = function (e) {
+					var vector = e.detail.e.request.applicationCommands;
+					var cmd1 = new Windows.UI.ApplicationSettings.SettingsCommand(id, text, callback);
+					vector.append(cmd1);
+				};
+			},
+
+			// Add link to charm
+			charmLink: function(id, text, link){
+				this.charm(id, text, function () {
+					window.open(link);
+				});
 			}
 		}
 	);
